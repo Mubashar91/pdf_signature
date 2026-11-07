@@ -25,7 +25,9 @@ Open <http://localhost:4173>. There is no dependency installation or build step.
 
 ## Deploy
 
-Serve the contents of `dist` as a static website. For Vercel, select **Other** as the framework, leave the build command empty, and set the output directory to **dist**.
+Serve the contents of `dist` as a static website. The included `vercel.json` selects the **Other** framework preset, skips installation and building, and serves **dist**. Keep Vercel's Root Directory at the repository root so that it reads this configuration. Pushes to `main` deploy automatically when the repository is connected to Vercel.
+
+Production URL: <https://freepdfsignature.vercel.app/>.
 
 Before deploying to a new production domain, update the SEO origin:
 
@@ -40,6 +42,7 @@ Use your actual production origin in that command. It updates the canonical URLs
 - `dist/` — Static website, signing application, guides, and assets.
 - `scripts/configure-seo.mjs` — SEO metadata and sitemap configuration.
 - `seo.config.json` — Current production origin.
+- `vercel.json` — Static hosting settings for Vercel.
 - `.openai/hosting.json` — Existing ChatGPT Sites deployment configuration.
 
 Local QA artifacts and temporary checkouts are excluded from Git.

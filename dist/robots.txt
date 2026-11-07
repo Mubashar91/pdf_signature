@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://pdf-signature-studio.mmubasharshahzad40.chatgpt.site/sitemap.xml
+Sitemap: https://freepdfsignature.vercel.app/sitemap.xml
