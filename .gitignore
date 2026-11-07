@@ -1,0 +1,14 @@
+# Local previews, QA artifacts, and temporary source checkouts
+/.qa/
+/.sites-source/
+/site/
+/.vercel/
+
+# Local dependencies and configuration
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
