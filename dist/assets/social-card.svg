@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f7f6f0"/>
+  <circle cx="965" cy="310" r="250" fill="#e8edda"/>
+  <circle cx="965" cy="310" r="270" fill="none" stroke="#d8e1c7"/>
+  <rect x="66" y="54" width="48" height="52" rx="14" fill="#213e34"/>
+  <text x="80" y="95" font-family="Georgia,serif" font-size="49" font-style="italic" fill="#e5edb5">i</text>
+  <text x="129" y="94" font-family="Arial,sans-serif" font-size="45" font-weight="600" letter-spacing="-2" fill="#213e34">inklet.</text>
+  <text x="67" y="176" font-family="Arial,sans-serif" font-size="14" font-weight="600" letter-spacing="3" fill="#758664">A LITTLE LESS PAPERWORK.</text>
+  <text x="64" y="278" font-family="Georgia,serif" font-size="73" letter-spacing="-3" fill="#213e34">Free PDF signature.</text>
+  <text x="64" y="364" font-family="Georgia,serif" font-size="73" font-style="italic" letter-spacing="-3" fill="#768966">Your way.</text>
+  <path d="M67 380Q218 365 367 377" fill="none" stroke="#b77b56" stroke-width="3" stroke-linecap="round"/>
+  <text x="67" y="435" font-family="Arial,sans-serif" font-size="23" fill="#6e7c62">Draw or type. Place it. Download your PDF.</text>
+  <rect x="67" y="487" width="254" height="55" rx="7" fill="#213e34"/>
+  <text x="90" y="522" font-family="Arial,sans-serif" font-size="20" fill="#fffefa">Sign a PDF for free</text>
+  <path d="M281 514h19m-7-7 7 7-7 7" stroke="#e5edb5" stroke-width="2" fill="none"/>
+  <text x="67" y="584" font-family="Arial,sans-serif" font-size="15" fill="#7e8c70">No account. No watermark. Your document stays on your device.</text>
+  <g transform="translate(818 122) rotate(8 145 200)"><rect x="17" y="18" width="252" height="366" rx="5" fill="#d5dfbf"/></g>
+  <g transform="translate(802 108) rotate(-7 145 200)">
+    <rect width="252" height="366" rx="5" fill="#fffefa" stroke="#dde3d2"/>
+    <text x="27" y="49" font-family="Arial,sans-serif" font-size="10" letter-spacing="2" fill="#8a9978">YOUR NEXT CHAPTER</text>
+    <path d="M27 66h198" stroke="#e3e8db"/>
+    <text x="27" y="110" font-family="Georgia,serif" font-size="29" fill="#213e34">Good things</text>
+    <text x="27" y="145" font-family="Georgia,serif" font-size="29" fill="#213e34">start here.</text>
+    <path d="M27 177h198M27 191h181M27 205h195M27 219h135" stroke="#e6eadf" stroke-width="5" stroke-linecap="round"/>
+    <text x="27" y="259" font-family="Arial,sans-serif" font-size="8" letter-spacing="2" fill="#8a9978">YOUR SIGNATURE</text>
+    <text x="27" y="299" font-family="Georgia,serif" font-size="27" font-style="italic" fill="#325a44">Alex Morgan</text>
+    <path d="M25 312Q110 294 215 305" stroke="#5c7c4e" fill="none"/>
+    <path d="M27 336h198" stroke="#dde3d2"/>
+    <text x="27" y="353" font-family="Arial,sans-serif" font-size="8" fill="#91a17e">SIGNED WITH INKLET</text>
+  </g>
+  <circle cx="1064" cy="455" r="36" fill="#284b37" stroke="#f7f6f0" stroke-width="6"/>
+  <path d="m1049 455 11 11 20-24" fill="none" stroke="#e5edb5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
