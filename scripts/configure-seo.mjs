@@ -19,7 +19,7 @@ const pages = [
   {
     file: 'index.html', route: '/',
     title: 'Free PDF Signature — Sign PDF Online | Inklet',
-    headline: 'Sign a PDF online. For free.',
+    headline: 'Sign a PDF online. Get on with your day.',
     description: 'Sign a PDF online for free. Draw or type your signature, place it on any page, and download your signed PDF. No account, watermark, or document upload.'
   },
   {
@@ -33,6 +33,13 @@ const pages = [
     title: 'Draw or Type Your PDF Signature — Free Signing Guide | Inklet',
     headline: 'Draw or type your PDF signature?',
     description: 'Compare drawn and typed PDF signatures. Learn how to choose a signature style, change ink colours, resize your mark, and understand the tool’s limits.'
+  },
+  {
+    file: 'guides/ats-friendly-resume-pdf/index.html', route: '/guides/ats-friendly-resume-pdf/',
+    title: 'ATS-Friendly Resume PDF: Format, Check & Sign | Inklet',
+    headline: 'How to prepare an ATS-friendly resume PDF.',
+    description: 'Prepare an ATS-friendly resume PDF: check readable text, layout and file size, explore AI editing and Harvard templates, and sign only when requested.',
+    published: '2026-11-08'
   }
 ];
 const escapeHtml = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
@@ -60,6 +67,7 @@ const replacements = pages.map((page) => {
       '@type': 'TechArticle', '@id': `${url}#article`, headline: page.headline,
       description: page.description, inLanguage: 'en', image,
       author: { '@id': `${origin}/#organization` }, publisher: { '@id': `${origin}/#organization` },
+      ...(page.published ? { datePublished: page.published, dateModified: page.published } : {}),
       mainEntityOfPage: { '@id': `${url}#webpage` }
     }, {
       '@type': 'BreadcrumbList', '@id': `${url}#breadcrumbs`,

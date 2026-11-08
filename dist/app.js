@@ -7,21 +7,24 @@
     changeFile: $('changeFile'), pdfCanvas: $('pdfCanvas'), pageWrap: $('pageWrap'), pageStage: $('pageStage'),
     pageLabel: $('pageLabel'), prev: $('prevPage'), next: $('nextPage'), layer: $('signatureLayer'), preview: $('signaturePreview'),
     create: $('createSignature'), size: $('signatureSize'), sizeValue: $('sizeValue'), remove: $('removeSignature'), download: $('downloadPdf'),
-    status: $('status'), dialog: $('signatureDialog'), close: $('closeDialog'), drawTab: $('drawTab'), typeTab: $('typeTab'),
+    status: $('status'), editorStatus: $('editorStatus'), dialog: $('signatureDialog'), close: $('closeDialog'), drawTab: $('drawTab'), typeTab: $('typeTab'),
     drawPanel: $('drawPanel'), typePanel: $('typePanel'), drawCanvas: $('drawCanvas'), typedName: $('typedName'), typedPreview: $('typedPreview'),
     clear: $('clearDrawing'), use: $('useSignature'), choose: $('chooseFile'), sample: $('trySample'),
     sampleRow: $('sampleRow'), workspaceStep: $('workspaceStep'), dialogError: $('dialogError')
   };
-  const state = { file: null, bytes: null, pdf: null, page: 1, signature: null, placement: null, method: 'draw', drawing: false, hasDrawing: false, renderToken: 0, drag: null, ink: '#213e34', font: 'Caveat', ratio: 4, loading: false, saving: false, renderTask: null, downloaded: false };
+  const state = { file: null, bytes: null, pdf: null, page: 1, signature: null, placement: null, method: 'draw', drawing: false, hasDrawing: false, renderToken: 0, drag: null, ink: '#213e34', font: 'Caveat', ratio: 4, loading: false, saving: false, renderTask: null, downloaded: false, uploadFromHero: true };
   const drawCtx = el.drawCanvas.getContext('2d');
   drawCtx.strokeStyle = state.ink;
   drawCtx.lineWidth = 5;
   drawCtx.lineCap = 'round';
   drawCtx.lineJoin = 'round';
 
-  function setStatus(message, error = false) {
-    el.status.textContent = message;
-    el.status.classList.toggle('error', error);
+  function setStatus(message, error = false, context = null) {
+    const target = context || (state.pdf ? el.editorStatus : el.status);
+    const other = target === el.status ? el.editorStatus : el.status;
+    other.textContent = '';
+    target.textContent = message;
+    target.classList.toggle('error', error);
   }
   function updateControls() {
     const placed = !!state.placement;
@@ -30,8 +33,8 @@
     el.download.disabled = !placed || state.saving || state.loading;
     el.prev.disabled = !state.pdf || state.page <= 1 || state.loading;
     el.next.disabled = !state.pdf || state.page >= state.pdf.numPages || state.loading;
-    el.choose.disabled = state.loading;
-    el.sample.disabled = state.loading;
+    el.choose.disabled = state.loading || state.saving;
+    el.sample.disabled = state.loading || state.saving;
     el.changeFile.disabled = state.loading || state.saving;
     el.create.disabled = state.loading || state.saving;
     const step = !state.pdf ? 1 : !placed ? 2 : 3;
@@ -58,30 +61,38 @@
   }
   async function loadFile(file) {
     if (!file || state.loading || state.saving) return;
-    if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') return setStatus('Please choose a PDF file.', true);
-    if (file.size > 25 * 1024 * 1024) return setStatus('Please choose a PDF smaller than 25 MB.', true);
-    if (!window.pdfjsLib || !window.PDFLib) return setStatus('The PDF libraries could not load. Check your connection and refresh the page.', true);
-    setStatus('Opening your PDF…');
+    const uploadStatus = state.uploadFromHero ? el.status : el.editorStatus;
+    if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') return setStatus('Please choose a PDF file.', true, uploadStatus);
+    if (file.size > 25 * 1024 * 1024) return setStatus('Please choose a PDF smaller than 25 MB.', true, uploadStatus);
+    if (!window.pdfjsLib || !window.PDFLib) return setStatus('The PDF libraries could not load. Check your connection and refresh the page.', true, uploadStatus);
+    setStatus('Opening your PDF…', false, uploadStatus);
+    let opened = false;
     state.loading = true; updateControls();
     el.upload.setAttribute('aria-busy', 'true');
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
       if (String.fromCharCode(...bytes.slice(0, 5)) !== '%PDF-') throw new Error('This file does not appear to be a PDF.');
-      const pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
+      const pdf = await pdfjsLib.getDocument({ data: bytes.slice(), isEvalSupported: false }).promise;
       if (state.pdf) await state.pdf.destroy();
       state.file = file; state.bytes = bytes; state.pdf = pdf; state.page = 1; state.signature = null; state.placement = null; state.downloaded = false;
       el.size.value = '35'; el.sizeValue.textContent = '35%';
       el.fileName.textContent = file.name;
       el.fileSize.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB · ${pdf.numPages} ${pdf.numPages === 1 ? 'page' : 'pages'}`;
-      el.upload.classList.add('hidden'); el.editor.classList.remove('hidden');
-      el.sampleRow.classList.add('hidden');
+      el.editor.classList.remove('hidden');
+      $('workspaceSection').classList.remove('hidden');
       await renderPage();
       updateControls();
       setStatus('PDF ready. Create a signature to continue.');
+      opened = true;
+      $('workspaceSection').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     } catch (err) {
       console.error(err);
-      setStatus(err.message || 'This PDF could not be opened. Try another file.', true);
-    } finally { state.loading = false; el.upload.removeAttribute('aria-busy'); updateControls(); el.file.value = ''; }
+      setStatus(err.message || 'This PDF could not be opened. Try another file.', true, uploadStatus);
+    } finally {
+      state.loading = false; state.uploadFromHero = false;
+      el.upload.removeAttribute('aria-busy'); updateControls(); el.file.value = '';
+      if (opened) el.create.focus({ preventScroll: true });
+    }
   }
   async function renderPage() {
     const token = ++state.renderToken;
@@ -200,7 +211,8 @@
   }
 
   async function trySample() {
-    if (!window.PDFLib) return setStatus('The PDF library could not load. Check your connection and refresh the page.', true);
+    state.uploadFromHero = true;
+    if (!window.PDFLib) return setStatus('The PDF library could not load. Check your connection and refresh the page.', true, el.status);
     el.sample.disabled = true;
     try {
       const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
@@ -231,18 +243,18 @@
         page.drawText(`A little less paperwork. | Sample page ${index + 1} of 2`, { x: 55, y: 50, size: 9, font: sans, color: grey });
       }
       await loadFile(new File([await pdf.save()], 'Inklet-sample.pdf', { type: 'application/pdf' }));
-    } catch (error) { setStatus('The sample could not open. Please choose your own PDF or try again.', true); }
+    } catch (error) { setStatus('The sample could not open. Please choose your own PDF or try again.', true, el.status); }
     finally { updateControls(); }
   }
 
   if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   el.file.addEventListener('change', (e) => loadFile(e.target.files[0]));
-  el.choose.addEventListener('click', () => el.file.click());
+  el.choose.addEventListener('click', () => { state.uploadFromHero = true; el.file.click(); });
   el.sample.addEventListener('click', trySample);
-  el.changeFile.addEventListener('click', () => { el.file.value = ''; el.file.click(); });
+  el.changeFile.addEventListener('click', () => { state.uploadFromHero = false; el.file.value = ''; el.file.click(); });
   for (const eventName of ['dragenter', 'dragover']) el.upload.addEventListener(eventName, (e) => { e.preventDefault(); el.upload.classList.add('drag-over'); });
   for (const eventName of ['dragleave', 'drop']) el.upload.addEventListener(eventName, (e) => { e.preventDefault(); el.upload.classList.remove('drag-over'); });
-  el.upload.addEventListener('drop', (e) => loadFile(e.dataTransfer.files[0]));
+  el.upload.addEventListener('drop', (e) => { state.uploadFromHero = true; loadFile(e.dataTransfer.files[0]); });
   el.prev.addEventListener('click', async () => { if (state.page > 1) { state.page--; await renderPage(); } });
   el.next.addEventListener('click', async () => { if (state.page < state.pdf.numPages) { state.page++; await renderPage(); } });
   el.create.addEventListener('click', () => { updateSignatureButton(); el.dialog.showModal(); });

@@ -9,7 +9,7 @@ A browser-based PDF signing tool built with static HTML, CSS, and JavaScript. Dr
 - Navigate multi-page PDFs, move your signature, and adjust its size.
 - Open PDFs up to 25 MB and download a signed copy without a watermark.
 - Try the built-in two-page sample document.
-- Read two original PDF signing guides.
+- Read three original PDF guides, including a checklist for ATS-friendly resume PDFs.
 
 The tool places one signature image in a document at a time. It does not provide certificate-based digital signatures, identity verification, or an audit trail.
 
